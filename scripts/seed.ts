@@ -72,7 +72,7 @@ async function main() {
 
     // Helper to extract and upload files
     const processFiles = async (filesText: string, isSolution: boolean) => {
-      const fileRegex = /\*\*File \d+: `(.*?)`\*\*(?: \(solution\))?\n```(?:typescript|ts|javascript|js)\n([\s\S]*?)\n```/g;
+      const fileRegex = /\*\*File \d+: `(.*?)`.*\n```(?:typescript|ts|javascript|js)\n([\s\S]*?)\n```/g;
       let fileMatch;
       let fileOrder = 0;
 

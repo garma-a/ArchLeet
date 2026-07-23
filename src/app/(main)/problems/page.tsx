@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getProblems } from '@/actions/problems';
 import { DifficultyBadge } from '@/components/problems/DifficultyBadge';
 import { CategoryTag } from '@/components/problems/CategoryTag';
+import { ProblemFilters } from '@/components/problems/ProblemFilters';
 
 export default async function ProblemsPage({
   searchParams,
@@ -23,20 +24,10 @@ export default async function ProblemsPage({
         </div>
         {/* Simple Filter UI */}
         <div className="flex gap-4">
-          <select className="bg-gray-900 border border-gray-800 text-sm rounded-md px-3 py-1.5 focus:ring-2 focus:ring-blue-500 outline-none">
-            <option value="">All Difficulties</option>
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-          <select className="bg-gray-900 border border-gray-800 text-sm rounded-md px-3 py-1.5 focus:ring-2 focus:ring-blue-500 outline-none">
-            <option value="">All Categories</option>
-            <option value="solid">SOLID Principles</option>
-            <option value="gof_creational">Creational Patterns</option>
-            <option value="gof_structural">Structural Patterns</option>
-            <option value="gof_behavioral">Behavioral Patterns</option>
-            <option value="refactoring">Refactoring</option>
-          </select>
+          <ProblemFilters 
+            defaultCategory={resolvedParams.category} 
+            defaultDifficulty={resolvedParams.difficulty} 
+          />
         </div>
       </div>
 

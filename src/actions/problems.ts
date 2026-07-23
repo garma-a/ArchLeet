@@ -29,6 +29,7 @@ export async function getProblems(options: GetProblemsOptions = {}): Promise<Pro
   if (search)     query = query.ilike('title', `%${search}%`);
 
   const { data: problems, error } = await query;
+  if (error) console.error("GET PROBLEMS ERROR:", error);
   if (error || !problems) return [];
 
   // If authenticated, attach user's solve status
