@@ -50,7 +50,8 @@ export interface ProblemFile {
   problem_id: string;
   filename: string;
   language: string;
-  content: string;
+  storage_path: string;
+  content?: string;
   file_order: number;
   is_solution: boolean;
   created_at: string;

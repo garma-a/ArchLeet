@@ -77,6 +77,24 @@ export async function getProblemBySlug(slug: string): Promise<ProblemWithFiles |
   // Sort files by file_order
   problem.problem_files?.sort((a: any, b: any) => a.file_order - b.file_order);
 
+  // Hydrate file contents from Supabase Storage
+  if (problem.problem_files) {
+    for (const file of problem.problem_files) {
+      if (file.storage_path) {
+        const { data, error: downloadError } = await supabase.storage
+          .from('problem-files')
+          .download(file.storage_path);
+          
+        if (data) {
+          file.content = await data.text();
+        } else {
+          console.error(`Failed to download ${file.storage_path}:`, downloadError);
+          file.content = '// Failed to load file content';
+        }
+      }
+    }
+  }
+
   return problem as ProblemWithFiles;
 }
 
@@ -93,6 +111,23 @@ export async function getSolutionFiles(problemId: string) {
     .eq('is_solution', true)
     .order('file_order');
 
-  if (error) return null;
+  if (error || !data) return null;
+  
+  // Hydrate file contents from Supabase Storage
+  for (const file of data) {
+    if (file.storage_path) {
+      const { data: fileData, error: downloadError } = await supabase.storage
+        .from('problem-files')
+        .download(file.storage_path);
+        
+      if (fileData) {
+        file.content = await fileData.text();
+      } else {
+        console.error(`Failed to download ${file.storage_path}:`, downloadError);
+        file.content = '// Failed to load file content';
+      }
+    }
+  }
+
   return data;
 }

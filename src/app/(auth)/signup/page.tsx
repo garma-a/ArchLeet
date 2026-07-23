@@ -29,6 +29,10 @@ export default function SignupPage() {
     }
   }
 
+  async function handleGitHubSignIn() {
+    await signInWithGitHub();
+  }
+
   return (
     <div className="p-8">
       <div className="mb-8 text-center">
@@ -114,7 +118,7 @@ export default function SignupPage() {
             <hr className="w-full border-gray-800" />
           </div>
 
-          <form action={signInWithGitHub} className="mt-6">
+          <form action={handleGitHubSignIn} className="mt-6">
             <button
               type="submit"
               className="w-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white font-medium rounded-md px-4 py-2 transition-colors flex items-center justify-center gap-2"

@@ -18,6 +18,10 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function main() {
   console.log('Starting seed process from markdown...');
+  
+  // Ensure bucket exists
+  await supabase.storage.createBucket('problem-files', { public: true }).catch(() => {});
+  
   const mdPath = path.join(process.cwd(), 'ARCHLEET_10_OOP_PROBLEMS.md');
   const mdContent = fs.readFileSync(mdPath, 'utf-8');
 
@@ -41,7 +45,7 @@ async function main() {
     console.log(`\nProcessing: ${title} (${slug})`);
 
     // Insert Problem
-    const { data: problem, error: probError } = await supabase
+    const { error: probError } = await supabase
       .from('problems')
       .upsert({
         slug,
@@ -53,14 +57,16 @@ async function main() {
         tags,
         is_published: true,
         order_index: orderIndex++
-      }, { onConflict: 'slug' })
-      .select('id')
-      .single();
+      }, { onConflict: 'slug' });
 
     if (probError) {
       console.error(`Error inserting problem ${slug}:`, probError);
       continue;
     }
+
+    // Get the ID (upsert might not return it directly if we don't .select(), let's select it)
+    const { data: problem } = await supabase.from('problems').select('id').eq('slug', slug).single();
+    if (!problem) continue;
 
     const problemId = problem.id;
 
@@ -91,7 +97,7 @@ async function main() {
         }
 
         // Insert into problem_files table
-        await supabase
+        const { error: insertError } = await supabase
           .from('problem_files')
           .insert({
             problem_id: problemId,
@@ -101,6 +107,10 @@ async function main() {
             file_order: fileOrder++,
             is_solution: isSolution
           });
+          
+        if (insertError) {
+            console.error(`  Error inserting problem_file:`, insertError);
+        }
       }
     };
 
